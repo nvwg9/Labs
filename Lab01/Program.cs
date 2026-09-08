@@ -1,9 +1,3 @@
-﻿namespace Lab01;
+﻿using Lab01;
 
-class Program
-{
-    static void Main(string[] args)
-    {
-        Console.WriteLine("Hello, World!");
-    }
-}
+Task01.Run();
