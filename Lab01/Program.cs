@@ -1,3 +1,3 @@
 ﻿using Lab01;
 
-Task02.Run();
+Task03.Run();
