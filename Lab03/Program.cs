@@ -4,22 +4,87 @@ class Program
 {
     static void Main(string[] args)
     {
-        Doctor doc1 = new Doctor("Олег", "Сидоренко", "Кардіологія", "LIC-001", "0441234567");
-        doc1.WorkEndHour = 16;
-
-        Doctor doc2 = new Doctor("Наталія", "Мороз", "Неврологія", "LIC-002", "0442345678");
-        doc2.WorkStartHour = 9;
-        doc2.WorkEndHour = 18; 
-
-        Doctor doc3 = new Doctor("Андрій", "Власенко", "Педіатрія", "LIC-003", "0443456789");
+        PatientManager manager = new PatientManager();
         
-        Doctor doc4 = new Doctor();
+        manager.Add(new Patient("Іван", "Петренко", new DateTime(1985, 5, 14), "A+", "0501234567"));
+        manager.Add(new Patient("Олена", "Коваль", new DateTime(1993, 2, 20), "B-", "0672345678"));
+        manager.Add(new Patient("Максим", "Бойко", new DateTime(2010, 8, 10), "0+", "0933456789"));
+        manager.Add(new Patient("Марія", "Ткач"));
 
-        Doctor[] doctors = { doc1, doc2, doc3, doc4 };
-
-        foreach (var doc in doctors)
+        Console.WriteLine();
+        RunPatientMenu(manager);
+    }
+    
+    static void RunPatientMenu(PatientManager manager)
+    {
+        while (true)
         {
-            Console.WriteLine(doc);
+            Console.WriteLine("\n--- Підменю «Пацієнти» ---");
+            Console.WriteLine("1. Показати всіх");
+            Console.WriteLine("2. Додати пацієнта");
+            Console.WriteLine("3. Знайти за ім'ям");
+            Console.WriteLine("4. Видалити за ID");
+            Console.WriteLine("5. Статистика");
+            Console.WriteLine("0. Вихід");
+            Console.Write("Оберіть дію: ");
+
+            string? choice = Console.ReadLine();
+            Console.WriteLine();
+
+            switch (choice)
+            {
+                case "1":
+                    manager.DisplayAll();
+                    break;
+
+                case "2":
+                    Console.Write("Ім'я: ");
+                    string fn = Console.ReadLine() ?? "";
+                    Console.Write("Прізвище: ");
+                    string ln = Console.ReadLine() ?? "";
+                    manager.Add(new Patient(fn, ln));
+                    break;
+
+                case "3":
+                    Console.Write("Введіть пошуковий запит: ");
+                    string q = Console.ReadLine() ?? "";
+                    var found = manager.FindByName(q);
+                    if (found.Length == 0)
+                    {
+                        Console.WriteLine("Нікого не знайдено.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Знайдено ({found.Length}):");
+                        foreach (var p in found)
+                        {
+                            Console.WriteLine(p);
+                        }
+                    }
+                    break;
+
+                case "4":
+                    Console.Write("Введіть ID для видалення: ");
+                    if (int.TryParse(Console.ReadLine(), out int id))
+                    {
+                        if (manager.Remove(id))
+                            Console.WriteLine($"Пацієнта з ID {id} успішно видалено.");
+                        else
+                            Console.WriteLine($"Пацієнта з ID {id} не знайдено.");
+                    }
+                    break;
+
+                case "5":
+                    manager.DisplayStats();
+                    break;
+
+                case "0":
+                    return;
+
+                default:
+                    Console.WriteLine("Невірний вибір. Спробуйте ще раз.");
+                    break;
+            }
         }
     }
 }
