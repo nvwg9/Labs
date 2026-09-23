@@ -4,19 +4,22 @@ class Program
 {
     static void Main(string[] args)
     {
-        Patient p1 = new Patient("Іван", "Петренко", new DateTime(1985, 5, 14), "A+", "0501234567");
-        Patient p2 = new Patient("Олена", "Коваль", new DateTime(1993, 2, 20), "B-", "0672345678");
-        Patient p3 = new Patient("Максим", "Бойко", new DateTime(2010, 8, 10), "0+", "0933456789");
-        
-        Patient p4 = new Patient();
-        
-        Patient p5 = new Patient("Марія", "Ткач");
-        
-        Patient[] patients = { p1, p2, p3, p4, p5 };
+        Doctor doc1 = new Doctor("Олег", "Сидоренко", "Кардіологія", "LIC-001", "0441234567");
+        doc1.WorkEndHour = 16;
 
-        foreach (var patient in patients)
+        Doctor doc2 = new Doctor("Наталія", "Мороз", "Неврологія", "LIC-002", "0442345678");
+        doc2.WorkStartHour = 9;
+        doc2.WorkEndHour = 18; 
+
+        Doctor doc3 = new Doctor("Андрій", "Власенко", "Педіатрія", "LIC-003", "0443456789");
+        
+        Doctor doc4 = new Doctor();
+
+        Doctor[] doctors = { doc1, doc2, doc3, doc4 };
+
+        foreach (var doc in doctors)
         {
-            Console.WriteLine(patient);
+            Console.WriteLine(doc);
         }
     }
 }
