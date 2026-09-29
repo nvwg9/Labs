@@ -15,8 +15,14 @@ class Program
         clinic.Patients.Add(new Patient("Максим", "Бойко", new DateTime(2010, 8, 10), BloodType.OPositive, "0933456789"));
         clinic.Patients.Add(new Patient("Марія", "Ткач"));
         
-        var doc1 = new Doctor("Олег", "Сидоренко", Speciality.Cardiology, "LIC-001", "0441234567") { WorkEndHour = 16 };
-        var doc2 = new Doctor("Наталія", "Мороз", Speciality.Neurology, "LIC-002", "0442345678") { WorkStartHour = 9, WorkEndHour = 18 };
+        var doc1 = new Doctor("Олег", "Сидоренко", Speciality.Cardiology, "LIC-001", "0441234567") 
+        { 
+            Schedule = new WorkSchedule(8, 16) 
+        };
+        var doc2 = new Doctor("Наталія", "Мороз", Speciality.Neurology, "LIC-002", "0442345678") 
+        { 
+            Schedule = new WorkSchedule(9, 18) 
+        };
         var doc3 = new Doctor("Андрій", "Власенко", Speciality.Pediatrics, "LIC-003", "0443456789");
 
         clinic.Doctors.Add(doc1);
@@ -185,7 +191,7 @@ class Program
                     string fn = Console.ReadLine() ?? "";
                     Console.Write("Прізвище: ");
                     string ln = Console.ReadLine() ?? "";
-                    
+
                     Console.WriteLine("Оберіть спеціальність:");
                     Console.WriteLine("0 - General");
                     Console.WriteLine("1 - Cardiology");
@@ -196,23 +202,27 @@ class Program
                     Console.WriteLine("6 - Dermatology");
                     Console.WriteLine("7 - Emergency");
                     Console.Write("Введіть номер спеціальності (0-7): ");
-                    
+    
                     int.TryParse(Console.ReadLine(), out int specNum);
                     Speciality sp = (Speciality)specNum;
 
                     var newDoctor = new Doctor(fn, ln, sp);
 
+                    int startH = 8;
                     Console.Write("Година початку роботи (0-23, за замовчуванням 8): ");
-                    if (int.TryParse(Console.ReadLine(), out int startH) && startH >= 0 && startH <= 23)
+                    if (int.TryParse(Console.ReadLine(), out int parsedStart) && parsedStart >= 0 && parsedStart <= 23)
                     {
-                        newDoctor.WorkStartHour = startH;
+                        startH = parsedStart;
                     }
 
+                    int endH = 17;
                     Console.Write("Година завершення роботи (0-23, за замовчуванням 17): ");
-                    if (int.TryParse(Console.ReadLine(), out int endH) && endH >= 0 && endH <= 23)
+                    if (int.TryParse(Console.ReadLine(), out int parsedEnd) && parsedEnd >= 0 && parsedEnd <= 23)
                     {
-                        newDoctor.WorkEndHour = endH;
+                        endH = parsedEnd;
                     }
+
+                    newDoctor.Schedule = new WorkSchedule(startH, endH);
 
                     clinic.Doctors.Add(newDoctor);
                     break;
