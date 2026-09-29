@@ -40,7 +40,7 @@ public class DoctorManager
 
         for (int i = 0; i < _count; i++)
         {
-            if (_doctors[i].Speciality.ToLower().Contains(lowerQuery))
+            if (_doctors[i].Speciality.ToString().ToLower().Contains(lowerQuery))
             {
                 matchesCount++;
             }
@@ -51,7 +51,7 @@ public class DoctorManager
 
         for (int i = 0; i < _count; i++)
         {
-            if (_doctors[i].Speciality.ToLower().Contains(lowerQuery))
+            if (_doctors[i].Speciality.ToString().ToLower().Contains(lowerQuery))
             {
                 result[index++] = _doctors[i];
             }
@@ -70,7 +70,6 @@ public class DoctorManager
         return copy;
     }
 
-  
     public bool Remove(int id)
     {
         int targetIndex = -1;
@@ -98,7 +97,6 @@ public class DoctorManager
         return true;
     }
 
-   
     public void DisplayAll()
     {
         if (_count == 0)
@@ -115,7 +113,6 @@ public class DoctorManager
         Console.WriteLine(new string('-', 70));
     }
 
-   
     public void DisplayStats()
     {
         if (_count == 0)
@@ -139,16 +136,14 @@ public class DoctorManager
         Console.WriteLine($"Доступні зараз: {availableCount}");
         Console.WriteLine("По спеціальностях:");
 
-       
         for (int i = 0; i < _count; i++)
         {
-            string currentSpec = _doctors[i].Speciality;
+            Speciality currentSpec = _doctors[i].Speciality;
             bool isAlreadyProcessed = false;
 
-           
             for (int j = 0; j < i; j++)
             {
-                if (_doctors[j].Speciality.Equals(currentSpec, StringComparison.OrdinalIgnoreCase))
+                if (_doctors[j].Speciality == currentSpec) 
                 {
                     isAlreadyProcessed = true;
                     break;
@@ -163,7 +158,7 @@ public class DoctorManager
             int specCount = 0;
             for (int k = 0; k < _count; k++)
             {
-                if (_doctors[k].Speciality.Equals(currentSpec, StringComparison.OrdinalIgnoreCase))
+                if (_doctors[k].Speciality == currentSpec)
                 {
                     specCount++;
                 }

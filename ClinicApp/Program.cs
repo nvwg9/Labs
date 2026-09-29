@@ -10,14 +10,14 @@ class Program
 
         Clinic clinic = new Clinic("Медична Клініка");
         
-        clinic.Patients.Add(new Patient("Іван", "Петренко", new DateTime(1985, 5, 14), "A+", "0501234567"));
-        clinic.Patients.Add(new Patient("Олена", "Коваль", new DateTime(1993, 2, 20), "B-", "0672345678"));
-        clinic.Patients.Add(new Patient("Максим", "Бойко", new DateTime(2010, 8, 10), "0+", "0933456789"));
+        clinic.Patients.Add(new Patient("Іван", "Петренко", new DateTime(1985, 5, 14), BloodType.APositive, "0501234567"));
+        clinic.Patients.Add(new Patient("Олена", "Коваль", new DateTime(1993, 2, 20), BloodType.BNegative, "0672345678"));
+        clinic.Patients.Add(new Patient("Максим", "Бойко", new DateTime(2010, 8, 10), BloodType.OPositive, "0933456789"));
         clinic.Patients.Add(new Patient("Марія", "Ткач"));
         
-        var doc1 = new Doctor("Олег", "Сидоренко", "Кардіологія", "LIC-001", "0441234567") { WorkEndHour = 16 };
-        var doc2 = new Doctor("Наталія", "Мороз", "Неврологія", "LIC-002", "0442345678") { WorkStartHour = 9, WorkEndHour = 18 };
-        var doc3 = new Doctor("Андрій", "Власенко", "Педіатрія", "LIC-003", "0443456789");
+        var doc1 = new Doctor("Олег", "Сидоренко", Speciality.Cardiology, "LIC-001", "0441234567") { WorkEndHour = 16 };
+        var doc2 = new Doctor("Наталія", "Мороз", Speciality.Neurology, "LIC-002", "0442345678") { WorkStartHour = 9, WorkEndHour = 18 };
+        var doc3 = new Doctor("Андрій", "Власенко", Speciality.Pediatrics, "LIC-003", "0443456789");
 
         clinic.Doctors.Add(doc1);
         clinic.Doctors.Add(doc2);
@@ -185,8 +185,20 @@ class Program
                     string fn = Console.ReadLine() ?? "";
                     Console.Write("Прізвище: ");
                     string ln = Console.ReadLine() ?? "";
-                    Console.Write("Спеціальність: ");
-                    string sp = Console.ReadLine() ?? "";
+                    
+                    Console.WriteLine("Оберіть спеціальність:");
+                    Console.WriteLine("0 - General");
+                    Console.WriteLine("1 - Cardiology");
+                    Console.WriteLine("2 - Neurology");
+                    Console.WriteLine("3 - Pediatrics");
+                    Console.WriteLine("4 - Surgery");
+                    Console.WriteLine("5 - Orthopedics");
+                    Console.WriteLine("6 - Dermatology");
+                    Console.WriteLine("7 - Emergency");
+                    Console.Write("Введіть номер спеціальності (0-7): ");
+                    
+                    int.TryParse(Console.ReadLine(), out int specNum);
+                    Speciality sp = (Speciality)specNum;
 
                     var newDoctor = new Doctor(fn, ln, sp);
 

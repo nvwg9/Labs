@@ -1,4 +1,3 @@
-
 namespace Lab03;
 
 public class Patient
@@ -7,8 +6,8 @@ public class Patient
     public int Id { get; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public DateTime  DateOfBirth { get; set; }
-    public string BloodType { get; set; }
+    public DateTime DateOfBirth { get; set; }
+    public BloodType BloodType { get; set; } 
     public string Phone { get; set; }
     public string Email { get; set; } = string.Empty;
     
@@ -31,8 +30,8 @@ public class Patient
     }
     
     public bool IsAdult => Age >= 18;
-
-    public Patient(string firstName, string lastName, DateTime dateOfBirth, string bloodType, string phone)
+    
+    public Patient(string firstName, string lastName, DateTime dateOfBirth, BloodType bloodType, string phone)
     {
         Id = _nextId++;
         FirstName = firstName;
@@ -44,9 +43,10 @@ public class Patient
     } 
     
     public Patient(string firstName, string lastName) 
-        : this(firstName, lastName, new(2000, 1, 1), "Невідомо", "0000000000")
+        : this(firstName, lastName, new(2000, 1, 1), BloodType.Unknown, "0000000000")
     {
     }
+
     public Patient()
         : this("Невідомий", "Пацієнт")
     {
@@ -66,5 +66,4 @@ public class Patient
     {
         return $"[{Id}] {FullName} | Вік: {Age} ({GetAgeCategory()}) | Кров: {BloodType} | Тел: {Phone}";
     }
-    
 }
