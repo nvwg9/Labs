@@ -8,6 +8,18 @@ public class DoctorManager
 
     public int Count => _count;
     
+    public Doctor? this[int index]
+    {
+        get
+        {
+            if (index >= 0 && index < _count)
+            {
+                return _doctors[index];
+            }
+            return null;
+        }
+    }
+    
     public void Add(Doctor doctor)
     {
         if (_count >= MaxDoctors)
