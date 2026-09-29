@@ -38,9 +38,34 @@ class Program
         Console.WriteLine();
         clinic.GenerateReport();
         
+        Console.WriteLine("\n=== Демонстрація Завдання 4 ===");
+        
+        Doctor[] cardiologists = clinic.Doctors.FindBySpeciality(Speciality.Cardiology);
+        Doctor[] found = clinic.Doctors.FindBySpeciality("кардіо");
+        Console.WriteLine($"Перевантаження FindBySpeciality: знайдено {cardiologists.Length} (enum) та {found.Length} (string)");
+        
+        Appointment[] today = clinic.Appointments.GetByDate(2026, 5, 10);
+        Console.WriteLine($"Перевантаження GetByDate(2026, 5, 10): знайдено {today.Length} запис(ів)");
+        
+        if (clinic.Patients.TryFindById(3, out Patient? patient))
+        {
+            Console.WriteLine("TryFindById: знайдено -> " + patient!.FullName);
+        }
+        else
+        {
+            Console.WriteLine("TryFindById: Пацієнта не знайдено.");
+        }
+        
+        var aPosPatients = clinic.Patients.FindByBloodType(BloodType.APositive);
+        Console.WriteLine($"FindByBloodType(APositive): знайдено {aPosPatients.Length}");
+        
+        string name = clinic.Patients.FindById(99)?.FullName ?? "не знайдено";
+        Console.WriteLine($"Демонстрація ?. та ??: Пацієнт #99 -> {name}");
+        Console.WriteLine("==============================\n");
+
         RunMainMenu(clinic);
     }
-
+    
     static void RunMainMenu(Clinic clinic)
     {
         while (true)
