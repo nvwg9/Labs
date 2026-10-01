@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using ClinicApp;
 
 namespace Lab03;
 
@@ -38,7 +39,19 @@ class Program
         Console.WriteLine();
         clinic.GenerateReport();
         
-        Console.WriteLine("\n=== Демонстрація Завдання 4 ===");
+        Console.WriteLine("\n=== Демонстрація Завдання 2 (Value Type) ===");
+        WorkSchedule morning = new WorkSchedule(8, 16);
+        WorkSchedule evening = new WorkSchedule(14, 22);
+        Console.WriteLine($"morning: {morning}");
+        Console.WriteLine($"morning.IsNow: {morning.IsNow}");
+
+       
+        WorkSchedule copy = morning;
+        copy = new WorkSchedule(10, 18); 
+        Console.WriteLine($"Після зміни copy: morning = {morning} | copy = {copy}");
+        Console.WriteLine("============================================\n");
+        
+        Console.WriteLine("=== Демонстрація Завдання 4 ===");
         
         Doctor[] cardiologists = clinic.Doctors.FindBySpeciality(Speciality.Cardiology);
         Doctor[] found = clinic.Doctors.FindBySpeciality("кардіо");

@@ -1,4 +1,4 @@
-namespace Lab03;
+namespace ClinicApp;
 
 public struct WorkSchedule
 {
