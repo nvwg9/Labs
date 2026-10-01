@@ -1,4 +1,5 @@
 namespace Lab03;
+using ClinicApp;
 
 public class Appointment
 {
