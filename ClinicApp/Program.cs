@@ -45,11 +45,22 @@ class Program
         Console.WriteLine($"morning: {morning}");
         Console.WriteLine($"morning.IsNow: {morning.IsNow}");
 
-       
         WorkSchedule copy = morning;
-        copy = new WorkSchedule(10, 18); 
+        copy = new WorkSchedule(10, 18);
         Console.WriteLine($"Після зміни copy: morning = {morning} | copy = {copy}");
         Console.WriteLine("============================================\n");
+        
+        Console.WriteLine("=== Демонстрація Завдання 3 ===");
+        Console.WriteLine(ClinicFormatter.FormatBloodType(BloodType.APositive));
+        Console.WriteLine(ClinicFormatter.FormatAge(1));
+        Console.WriteLine(ClinicFormatter.FormatAge(3));
+        Console.WriteLine(ClinicFormatter.FormatAge(11));
+
+        Patient first = clinic.Patients[0];
+        Doctor second = clinic.Doctors[1];
+        Console.WriteLine($"Індексатор пацієнта [0]: {first?.FullName}");
+        Console.WriteLine($"Індексатор лікаря [1]: {second?.FullName}");
+        Console.WriteLine("==============================\n");
         
         Console.WriteLine("=== Демонстрація Завдання 4 ===");
         

@@ -1,4 +1,6 @@
-namespace Lab03;
+using Lab03;
+
+namespace ClinicApp;
 
 public static class ClinicFormatter
 {
@@ -24,7 +26,7 @@ public static class ClinicFormatter
         Speciality.Surgery => "Хірургія",
         Speciality.Orthopedics => "Ортопедія",
         Speciality.Dermatology => "Дерматологія",
-        Speciality.Emergency => "Невідкладна допомога",
+        Speciality.Emergency => "Швидка допомога",
         _ => "Невідомо"
     };
 
@@ -51,7 +53,7 @@ public static class ClinicFormatter
         {
             return phone ?? "";
         }
-        
+
         for (int i = 0; i < phone.Length; i++)
         {
             if (!char.IsDigit(phone[i]))
@@ -59,7 +61,7 @@ public static class ClinicFormatter
                 return phone;
             }
         }
-        
+
         return $"({phone.Substring(0, 3)}) {phone.Substring(3, 3)}-{phone.Substring(6, 4)}";
     }
 }
