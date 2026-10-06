@@ -1,5 +1,7 @@
-namespace Lab03;
-using ClinicApp;
+using ClinicApp.Enums;
+using ClinicApp.Utils;
+
+namespace ClinicApp.Models;
 
 public class Patient
 {

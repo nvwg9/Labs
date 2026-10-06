@@ -1,5 +1,6 @@
-namespace Lab03;
-using ClinicApp;
+using ClinicApp.Enums;
+
+namespace ClinicApp.Models;
 
 public class Appointment
 {

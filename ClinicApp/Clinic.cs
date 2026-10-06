@@ -1,4 +1,6 @@
-namespace Lab03;
+using ClinicApp.Managers;
+
+namespace ClinicApp;
 
 public class Clinic
 {

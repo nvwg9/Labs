@@ -1,4 +1,6 @@
-namespace Lab03;
+using ClinicApp.Models;
+
+namespace ClinicApp.Managers;
 
 public class AppointmentManager
 {
