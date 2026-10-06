@@ -17,13 +17,27 @@ public class Doctor
     public string FirstName
     {
         get => _firstName;
-        set => _firstName = value;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Ім'я не може бути порожнім.", nameof(FirstName));
+            if (value.Length > 50)
+                throw new ArgumentException("Ім'я не може бути довшим за 50 символів.", nameof(FirstName));
+            _firstName = value;
+        }
     }
 
     public string LastName
     {
         get => _lastName;
-        set => _lastName = value;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Прізвище не може бути порожнім.", nameof(LastName));
+            if (value.Length > 50)
+                throw new ArgumentException("Прізвище не може бути довшим за 50 символів.", nameof(LastName));
+            _lastName = value;
+        }
     }
 
     public Speciality Speciality { get; set; }
@@ -31,13 +45,28 @@ public class Doctor
     public string LicenseNumber
     {
         get => _licenseNumber;
-        set => _licenseNumber = value;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Номер ліцензії не може бути порожнім.", nameof(LicenseNumber));
+            _licenseNumber = value;
+        }
     }
 
     public string Phone
     {
         get => _phone;
-        set => _phone = value;
+        set
+        {
+            if (value == null || value.Length != 10)
+                throw new ArgumentException("Телефон має містити рівно 10 цифр.", nameof(Phone));
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] < '0' || value[i] > '9')
+                    throw new ArgumentException("Телефон має містити лише цифри.", nameof(Phone));
+            }
+            _phone = value;
+        }
     }
     
     public WorkSchedule Schedule { get; set; }
@@ -49,13 +78,13 @@ public class Doctor
     
     public Doctor(string firstName, string lastName, Speciality speciality, string licenseNumber, string phone)
     {
-        Id = _nextId++;
         FirstName = firstName;
         LastName = lastName;
         Speciality = speciality;
         LicenseNumber = licenseNumber;
         Phone = phone;
-        Schedule = new WorkSchedule(8, 17); 
+        Schedule = new WorkSchedule(8, 17);
+        Id = _nextId++;
     }
     
     public Doctor(string firstName, string lastName, Speciality speciality)
