@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using ClinicApp;
 using ClinicApp.Enums;
+using ClinicApp.Interfaces;
 using ClinicApp.Managers;
 using ClinicApp.Models;
 using ClinicApp.Utils;
@@ -159,16 +160,21 @@ static void RunMainMenu(Clinic clinic)
 {
     while (true)
     {
-        Console.WriteLine("\n=== ГОЛОВНЕ МЕНЮ КЛІНІКИ ===");
-        Console.WriteLine("1. Пацієнти");
-        Console.WriteLine("2. Лікарі");
-        Console.WriteLine("3. Записи");
-        Console.WriteLine("4. Медична картка");
-        Console.WriteLine("5. Підсумковий звіт");
-        Console.WriteLine("6. Розклад на день");
-        Console.WriteLine("7. Тест GrowablePatientManager");
-        Console.WriteLine("0. Вихід");
-        Console.Write("Оберіть пункт: ");
+        Console.WriteLine();
+        Console.WriteLine("╔══════════════════════════════════════════════╗");
+        Console.WriteLine("║           МЕДИЧНА КЛІНІКА                    ║");
+        Console.WriteLine("╠══════════════════════════════════════════════╣");
+        Console.WriteLine("║  1. Пацієнти       — реєстрація, пошук       ║");
+        Console.WriteLine("║  2. Лікарі         — персонал, розклад       ║");
+        Console.WriteLine("║  3. Записи         — прийоми, скасування     ║");
+        Console.WriteLine("║  4. Медична картка — діагнози, рецепти       ║");
+        Console.WriteLine("║  5. Рахунки        — оплата, борги           ║");
+        Console.WriteLine("║  6. Звіт           — загальна статистика     ║");
+        Console.WriteLine("║  7. Розклад        — прийоми на день         ║");
+        Console.WriteLine("║  8. Тест масиву    — GrowablePatientManager  ║");
+        Console.WriteLine("║  0. Вийти                                    ║");
+        Console.WriteLine("╚══════════════════════════════════════════════╝");
+        Console.Write("Оберіть розділ: ");
 
         string? choice = Console.ReadLine();
         Console.WriteLine();
@@ -188,9 +194,12 @@ static void RunMainMenu(Clinic clinic)
                 RunMedicalRecordMenu(clinic);
                 break;
             case "5":
-                clinic.GenerateReport();
+                RunBillingMenu(clinic);
                 break;
             case "6":
+                clinic.GenerateReport();
+                break;
+            case "7":
                 Console.Write("Введіть дату (рррр-мм-дд): ");
                 if (DateTime.TryParse(Console.ReadLine(), out DateTime selectedDate))
                 {
@@ -201,7 +210,7 @@ static void RunMainMenu(Clinic clinic)
                     Console.WriteLine("Некоректний формат дати.");
                 }
                 break;
-            case "7":
+            case "8":
                 TestGrowablePatientManager();
                 break;
             case "0":
@@ -320,7 +329,8 @@ static void RunDoctorMenu(Clinic clinic)
         Console.WriteLine("2. Додати лікаря");
         Console.WriteLine("3. Знайти за спеціальністю");
         Console.WriteLine("4. Видалити за ID");
-        Console.WriteLine("5. Статистика");
+        Console.WriteLine("5. Вільні години лікаря");
+        Console.WriteLine("6. Статистика");
         Console.WriteLine("0. Назад до головного меню");
         Console.Write("Оберіть дію: ");
 
@@ -410,6 +420,53 @@ static void RunDoctorMenu(Clinic clinic)
                 }
                 break;
             case "5":
+            {
+                Console.Write("ID лікаря: ");
+                if (!int.TryParse(Console.ReadLine(), out int doctorId))
+                {
+                    Console.WriteLine("Некоректне число.");
+                    break;
+                }
+                Doctor? doctor = clinic.Doctors.FindById(doctorId);
+                if (doctor == null)
+                {
+                    Console.WriteLine("Лікаря не знайдено.");
+                    break;
+                }
+                ISchedulable schedulable = doctor;
+
+                Console.Write("Дата (dd.MM.yyyy): ");
+                if (!DateTime.TryParseExact(Console.ReadLine(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                {
+                    Console.WriteLine("Некоректний формат дати.");
+                    break;
+                }
+                Console.Write("Скільки слотів: ");
+                if (!int.TryParse(Console.ReadLine(), out int slotCount))
+                {
+                    Console.WriteLine("Некоректне число.");
+                    break;
+                }
+
+                try
+                {
+                    DateTime[] slots = schedulable.GetAvailableSlots(date, slotCount);
+                    for (int i = 0; i < slots.Length; i++)
+                    {
+                        Console.WriteLine(slots[i].ToString("HH:mm"));
+                    }
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    Console.WriteLine("Помилка: " + e.Message);
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine("Помилка: " + e.Message);
+                }
+                break;
+            }
+            case "6":
                 clinic.Doctors.DisplayStats();
                 break;
             case "0":
@@ -431,6 +488,7 @@ static void RunAppointmentMenu(Clinic clinic)
         Console.WriteLine("3. Скасувати запис");
         Console.WriteLine("4. Завершити прийом");
         Console.WriteLine("5. Знайти за ID пацієнта");
+        Console.WriteLine("6. Скасувати всі записи пацієнта");
         Console.WriteLine("0. Назад до головного меню");
         Console.Write("Оберіть дію: ");
 
@@ -506,6 +564,21 @@ static void RunAppointmentMenu(Clinic clinic)
                     clinic.Appointments.DisplayList(clinic.Appointments.GetByPatient(patientId));
                 }
                 break;
+            case "6":
+            {
+                Console.Write("ID пацієнта: ");
+                if (!int.TryParse(Console.ReadLine(), out int cancelPatientId))
+                {
+                    Console.WriteLine("Некоректне число.");
+                    break;
+                }
+                Console.Write("Причина (Enter — без причини): ");
+                string cancelReason = Console.ReadLine() ?? "";
+
+                int cancelled = AppointmentManager.CancelAll(clinic.Appointments.GetByPatient(cancelPatientId), cancelReason);
+                Console.WriteLine($"Скасовано записів: {cancelled}");
+                break;
+            }
             case "0":
                 return;
             default:
@@ -708,6 +781,69 @@ static bool TryReadYesNo(string prompt, out bool answer)
         return false;
     }
     return true;
+}
+
+static void RunBillingMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine("\n── Рахунки ───────────────────");
+        Console.WriteLine("  1. Борги пацієнта");
+        Console.WriteLine("  2. Всі неоплачені записи");
+        Console.WriteLine("  3. Оплатити запис");
+        Console.WriteLine("  4. Загальний борг клініки");
+        Console.WriteLine("  0. Назад");
+        Console.Write("Оберіть: ");
+
+        string? choice = Console.ReadLine();
+        Console.WriteLine();
+
+        switch (choice)
+        {
+            case "1":
+            {
+                Console.Write("ID пацієнта: ");
+                if (!int.TryParse(Console.ReadLine(), out int patientId))
+                {
+                    Console.WriteLine("Некоректне число.");
+                    break;
+                }
+                IPayable[] unpaid = clinic.Billing.GetUnpaidByPatient(patientId);
+                Console.WriteLine($"Неоплачені записи пацієнта #{patientId}:");
+                clinic.Billing.DisplayUnpaid(unpaid);
+                Console.WriteLine($"Борг: {clinic.Billing.GetPatientDebt(patientId):F2} грн");
+                break;
+            }
+            case "2":
+            {
+                IPayable[] unpaid = clinic.Billing.GetAllUnpaid();
+                clinic.Billing.DisplayUnpaid(unpaid);
+                break;
+            }
+            case "3":
+            {
+                Console.Write("ID запису для оплати: ");
+                if (!int.TryParse(Console.ReadLine(), out int appointmentId))
+                {
+                    Console.WriteLine("Некоректне число.");
+                    break;
+                }
+                if (clinic.Billing.PayAppointment(appointmentId))
+                    Console.WriteLine($"Запис [{appointmentId}] оплачено.");
+                else
+                    Console.WriteLine("Не вдалося оплатити: запис не знайдено, вже оплачено або скасовано.");
+                break;
+            }
+            case "4":
+                Console.WriteLine($"Загальний борг по клініці: {clinic.Billing.GetTotalDebt():F2} грн");
+                break;
+            case "0":
+                return;
+            default:
+                Console.WriteLine("Невірний вибір.");
+                break;
+        }
+    }
 }
 
 static void TestGrowablePatientManager()
