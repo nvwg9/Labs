@@ -1,13 +1,16 @@
 using ClinicApp.Enums;
+using ClinicApp.Interfaces;
 using ClinicApp.Utils;
 
 namespace ClinicApp.Models;
 
-public class Appointment
+public class Appointment : IPayable
 {
     private static int _nextId = 1;
+    private const decimal CostPerMinute = 10m;
 
     private int _durationMinutes;
+    private bool _isPaid;
 
     public int Id { get; }
     public int PatientId { get; }
@@ -30,6 +33,8 @@ public class Appointment
     public DateTime EndsAt => ScheduledAt.AddMinutes(DurationMinutes);
     
     public bool IsUpcoming => ScheduledAt > DateTime.Now && Status == AppointmentStatus.Scheduled;
+
+    public bool IsPaid => _isPaid;
     
     public Appointment(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes = 30)
     {
@@ -55,6 +60,16 @@ public class Appointment
         }
 
         return false;
+    }
+    
+    public decimal GetCost() => DurationMinutes * CostPerMinute;
+
+    public void MarkPaid()
+    {
+        if (Status != AppointmentStatus.Cancelled)
+        {
+            _isPaid = true;
+        }
     }
     
     public bool Complete()

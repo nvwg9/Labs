@@ -95,6 +95,16 @@ public class AppointmentManager
         return false;
     }
     
+    public Appointment[] GetAll()
+    {
+        Appointment[] copy = new Appointment[_count];
+        for (int i = 0; i < _count; i++)
+        {
+            copy[i] = _appointments[i];
+        }
+        return copy;
+    }
+    
     public Appointment[] GetByPatient(int patientId)
     {
         int matches = 0;
