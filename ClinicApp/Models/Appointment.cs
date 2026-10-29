@@ -8,9 +8,11 @@ public class Appointment : IPayable, ICancellable
 {
     private static int _nextId = 1;
     private const decimal CostPerMinute = 10m;
+    public const decimal VipDiscountMultiplier = 0.8m;
 
     private int _durationMinutes;
     private bool _isPaid;
+    private decimal _discountMultiplier = 1m;
 
     public int Id { get; }
     public int PatientId { get; }
@@ -66,7 +68,18 @@ public class Appointment : IPayable, ICancellable
         return false;
     }
     
-    public virtual decimal GetCost() => DurationMinutes * CostPerMinute;
+    public decimal DiscountMultiplier
+    {
+        get => _discountMultiplier;
+        set
+        {
+            if (value <= 0m || value > 1m)
+                throw new ArgumentOutOfRangeException(nameof(DiscountMultiplier), "Множник знижки має бути в межах (0; 1].");
+            _discountMultiplier = value;
+        }
+    }
+
+    public virtual decimal GetCost() => DurationMinutes * CostPerMinute * DiscountMultiplier;
 
     public virtual string GetDescription() => "Прийом";
 
