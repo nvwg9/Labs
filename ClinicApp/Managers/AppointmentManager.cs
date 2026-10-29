@@ -214,6 +214,66 @@ public class AppointmentManager
         return GetByDate(new DateTime(year, month, day));
     }
     
+    public Appointment[] GetUrgent()
+    {
+        int matches = 0;
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is UrgentAppointment)
+                matches++;
+        }
+
+        Appointment[] result = new Appointment[matches];
+        int index = 0;
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is UrgentAppointment)
+                result[index++] = _appointments[i];
+        }
+
+        return result;
+    }
+    
+    public Appointment[] GetSpecialist()
+    {
+        int matches = 0;
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is SpecialistAppointment)
+                matches++;
+        }
+
+        Appointment[] result = new Appointment[matches];
+        int index = 0;
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is SpecialistAppointment)
+                result[index++] = _appointments[i];
+        }
+
+        return result;
+    }
+    
+    public Appointment[] GetRegular()
+    {
+        int matches = 0;
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is RegularAppointment)
+                matches++;
+        }
+
+        Appointment[] result = new Appointment[matches];
+        int index = 0;
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is RegularAppointment)
+                result[index++] = _appointments[i];
+        }
+
+        return result;
+    }
+    
     public Appointment[] GetUpcoming()
     {
         int matches = 0;
@@ -243,13 +303,14 @@ public class AppointmentManager
         string doctorName = doctor != null ? doctor.FullName : $"Лікар #{appointment.DoctorId}";
 
         string timeFormat = $"{appointment.ScheduledAt:dd.MM.yyyy HH:mm}–{appointment.EndsAt:HH:mm}";
-        string output = $"[{appointment.Id}] {patientName} -> {doctorName} | {timeFormat} | {appointment.Status}";
+        string output = $"[{appointment.Id}] {appointment.GetDescription()} | {patientName} → {doctorName} | {timeFormat} | {appointment.Status}";
 
         if (appointment.Notes.Length > 0)
         {
             output += $" | {appointment.Notes}";
         }
 
+        output += $" | {appointment.GetCost():F2} грн";
         Console.WriteLine(output);
     }
     
