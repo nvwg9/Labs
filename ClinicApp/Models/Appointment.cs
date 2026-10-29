@@ -66,7 +66,11 @@ public class Appointment : IPayable, ICancellable
         return false;
     }
     
-    public decimal GetCost() => DurationMinutes * CostPerMinute;
+    public virtual decimal GetCost() => DurationMinutes * CostPerMinute;
+
+    public virtual string GetDescription() => "Прийом";
+
+    public int GetPriority() => 3;
 
     public void MarkPaid()
     {
@@ -90,13 +94,14 @@ public class Appointment : IPayable, ICancellable
     public override string ToString()
     {
         string timeFormat = $"{ScheduledAt:dd.MM.yyyy HH:mm}–{EndsAt:HH:mm}";
-        string result = $"[{Id}] Пацієнт #{PatientId} -> Лікар #{DoctorId} | {timeFormat} | {Status}";
+        string result = $"[{Id}] {GetDescription()} | Пацієнт #{PatientId} → Лікар #{DoctorId} | {timeFormat} | {Status}";
 
         if (Notes.Length > 0)
         {
             result += $" | {Notes}";
         }
 
+        result += $" | {GetCost():F2} грн";
         return result;
     }
 }
