@@ -47,15 +47,40 @@ public class AppointmentManager
     
     public bool Book(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes = 30)
     {
-        var patient = _patients.FindById(patientId);
-        if (patient == null)
+        if (!CanBook(patientId, doctorId))
+            return false;
+
+        Store(new RegularAppointment(patientId, doctorId, scheduledAt, durationMinutes));
+        return true;
+    }
+
+    public bool BookUrgent(int patientId, int doctorId, DateTime scheduledAt, string urgencyNote = "", int durationMinutes = 30)
+    {
+        if (!CanBook(patientId, doctorId))
+            return false;
+
+        Store(new UrgentAppointment(patientId, doctorId, scheduledAt, urgencyNote, durationMinutes));
+        return true;
+    }
+
+    public bool BookSpecialist(int patientId, int doctorId, DateTime scheduledAt, string topic = "", int durationMinutes = 45)
+    {
+        if (!CanBook(patientId, doctorId))
+            return false;
+
+        Store(new SpecialistAppointment(patientId, doctorId, scheduledAt, topic, durationMinutes));
+        return true;
+    }
+
+    private bool CanBook(int patientId, int doctorId)
+    {
+        if (_patients.FindById(patientId) == null)
         {
             Console.WriteLine($"Помилка: пацієнта з ID {patientId} не знайдено.");
             return false;
         }
 
-        var doctor = _doctors.FindById(doctorId);
-        if (doctor == null)
+        if (_doctors.FindById(doctorId) == null)
         {
             Console.WriteLine($"Помилка: лікаря з ID {doctorId} не знайдено.");
             return false;
@@ -63,15 +88,20 @@ public class AppointmentManager
 
         if (_count >= MaxAppointments)
         {
-            Console.WriteLine("Помилка: досягнуто ліміту записів (500).");
+            Console.WriteLine($"Помилка: досягнуто ліміту записів ({MaxAppointments}).");
             return false;
         }
 
-        var appointment = new Appointment(patientId, doctorId, scheduledAt, durationMinutes);
+        return true;
+    }
+
+    private void Store(Appointment appointment)
+    {
         _appointments[_count++] = appointment;
 
-        Console.WriteLine($"Запис [{appointment.Id}] створено: {patient.FullName} -> {doctor.FullName} о {scheduledAt:dd.MM.yyyy HH:mm}");
-        return true;
+        string patientName = _patients.FindById(appointment.PatientId)?.FullName ?? $"Пацієнт #{appointment.PatientId}";
+        string doctorName = _doctors.FindById(appointment.DoctorId)?.FullName ?? $"Лікар #{appointment.DoctorId}";
+        Console.WriteLine($"Запис [{appointment.Id}] {appointment.GetDescription()} створено: {patientName} -> {doctorName} о {appointment.ScheduledAt:dd.MM.yyyy HH:mm}");
     }
     
     public bool Cancel(int id, string reason = "")

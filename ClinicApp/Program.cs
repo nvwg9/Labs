@@ -37,6 +37,11 @@ clinic.Appointments.Book(1, 1, new DateTime(2026, 5, 9, 10, 0, 0), 30);
 clinic.Appointments.Book(2, 2, new DateTime(2026, 5, 9, 11, 0, 0), 45);
 clinic.Appointments.Book(3, 3, new DateTime(2026, 5, 10, 9, 0, 0), 20);
 
+DateTime nextDay = DateTime.Today.AddDays(1);
+clinic.Appointments.Book(1, 1, nextDay.AddHours(10));
+clinic.Appointments.BookUrgent(2, 2, nextDay.AddHours(11), "біль у грудях");
+clinic.Appointments.BookSpecialist(3, 1, nextDay.AddHours(12), "кардіологія", 60);
+
 DateTime todayDate = DateTime.Today;
 clinic.MedicalRecords.Add(new Diagnosis(1, 1, todayDate.AddDays(-30), "I10", "Гіпертонічна хвороба", isChronic: true));
 clinic.MedicalRecords.Add(new Diagnosis(1, 1, todayDate.AddDays(-5), "J06.9", "Гострий ринофарингіт"));
@@ -153,6 +158,13 @@ for (int i = 0; i < patientRecords.Length; i++)
     Console.WriteLine($"{patientRecords[i].GetRecordType()}: {patientRecords[i].GetSummary()}");
 }
 Console.WriteLine("==========================================\n");
+
+Console.WriteLine("== new vs override ==");
+UrgentAppointment urgentDemo = new UrgentAppointment(1, 1, nextDay.AddHours(9), "тест");
+Appointment asBase = urgentDemo;
+Console.WriteLine($"Через Appointment:       {asBase.GetDescription()} | пріоритет {asBase.GetPriority()}");
+Console.WriteLine($"Через UrgentAppointment: {urgentDemo.GetDescription()} | пріоритет {urgentDemo.GetPriority()}");
+Console.WriteLine();
 
 RunMainMenu(clinic);
 
