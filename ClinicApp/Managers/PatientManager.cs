@@ -5,17 +5,15 @@ namespace ClinicApp.Managers;
 
 public class PatientManager
 {
-    private const int MaxPatients = 100;
-    private readonly Patient[] _patients = new Patient[MaxPatients];
-    private int _count = 0;
+    private readonly List<Patient> _patients = new List<Patient>();
 
-    public int Count => _count;
+    public int Count => _patients.Count;
 
     public Patient? this[int index]
     {
         get
         {
-            if (index >= 0 && index < _count)
+            if (index >= 0 && index < _patients.Count)
             {
                 return _patients[index];
             }
@@ -25,19 +23,13 @@ public class PatientManager
     
     public void Add(Patient patient)
     {
-        if (_count >= MaxPatients)
-        {
-            Console.WriteLine("Помилка: досягнуто ліміту пацієнтів (100).");
-            return;
-        }
-
-        _patients[_count++] = patient;
+        _patients.Add(patient);
         Console.WriteLine($"Пацієнта [{patient.Id}] {patient.FullName} додано.");
     }
 
     public Patient? FindById(int id)
     {
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < _patients.Count; i++)
         {
             if (_patients[i].Id == id)
             {
@@ -57,95 +49,64 @@ public class PatientManager
     public Patient[] FindByName(string query)
     {
         string lowerQuery = query.ToLower();
-        int matchesCount = 0;
+        List<Patient> matches = new List<Patient>();
 
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < _patients.Count; i++)
         {
             if (_patients[i].FirstName.ToLower().Contains(lowerQuery) ||
                 _patients[i].LastName.ToLower().Contains(lowerQuery))
             {
-                matchesCount++;
-            }
-        }
-        
-        Patient[] result = new Patient[matchesCount];
-        int index = 0;
-        
-        for (int i = 0; i < _count; i++)
-        {
-            if (_patients[i].FirstName.ToLower().Contains(lowerQuery) ||
-                _patients[i].LastName.ToLower().Contains(lowerQuery))
-            {
-                result[index++] = _patients[i];
+                matches.Add(_patients[i]);
             }
         }
 
-        return result;
+        return matches.ToArray();
     }
     
     public Patient[] FindByBloodType(BloodType bloodType)
     {
-        int matchesCount = 0;
+        List<Patient> matches = new List<Patient>();
 
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < _patients.Count; i++)
         {
             if (_patients[i].BloodType == bloodType)
             {
-                matchesCount++;
+                matches.Add(_patients[i]);
             }
         }
 
-        Patient[] result = new Patient[matchesCount];
-        int index = 0;
+        return matches.ToArray();
+    }
 
-        for (int i = 0; i < _count; i++)
-        {
-            if (_patients[i].BloodType == bloodType)
-            {
-                result[index++] = _patients[i];
-            }
-        }
-
-        return result;
+    public Patient[] GetAll()
+    {
+        return _patients.ToArray();
     }
     
     public bool Remove(int id)
     {
-        int targetIndex = -1;
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < _patients.Count; i++)
         {
             if (_patients[i].Id == id)
             {
-                targetIndex = i;
-                break;
+                _patients.RemoveAt(i);
+                return true;
             }
         }
 
-        if (targetIndex == -1)
-        {
-            return false;
-        }
-        
-        for (int i = targetIndex; i < _count - 1; i++)
-        {
-            _patients[i] = _patients[i + 1];
-        }
-
-        _patients[_count - 1] = null!; 
-        _count--;
-        return true;
+        return false;
     }
     
     public void DisplayAll()
     {
-        if (_count == 0)
+        if (_patients.Count == 0)
         {
             Console.WriteLine("Список пацієнтів порожній.");
             return;
         }
 
-        Console.WriteLine($"=== Пацієнти ({_count} / {MaxPatients}) ===");
-        for (int i = 0; i < _count; i++)
+        Console.WriteLine($"=== Пацієнти ({_patients.Count}) ===");
+        for (int i = 0; i < _patients.Count; i++)
         {
             Console.WriteLine(_patients[i]);
         }
@@ -154,7 +115,7 @@ public class PatientManager
 
     public void DisplayStats()
     {
-        if (_count == 0)
+        if (_patients.Count == 0)
         {
             Console.WriteLine("Статистика недоступна: список порожній.");
             return;
@@ -165,7 +126,7 @@ public class PatientManager
         int oldestIndex = 0;
         int adultCount = 0;
 
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < _patients.Count; i++)
         {
             int age = _patients[i].Age;
             sumAges += age;
@@ -186,14 +147,14 @@ public class PatientManager
             }
         }
 
-        double averageAge = (double)sumAges / _count;
+        double averageAge = (double)sumAges / _patients.Count;
 
         Console.WriteLine("=== Статистика пацієнтів ===");
-        Console.WriteLine($"Всього:        {_count}");
+        Console.WriteLine($"Всього:        {_patients.Count}");
         Console.WriteLine($"Середній вік:  {averageAge:F1} р.");
         Console.WriteLine($"Наймолодший:   {_patients[youngestIndex].FullName} ({_patients[youngestIndex].Age} р.)");
         Console.WriteLine($"Найстарший:    {_patients[oldestIndex].FullName} ({_patients[oldestIndex].Age} р.)");
-        Console.WriteLine($"Дорослих:      {adultCount} з {_count}");
+        Console.WriteLine($"Дорослих:      {adultCount} з {_patients.Count}");
         Console.WriteLine("============================");
     }
 }
