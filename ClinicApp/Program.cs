@@ -185,8 +185,9 @@ static void RunMainMenu(Clinic clinic)
         Console.WriteLine("║  6. Черга          — очікування, прийом      ║");
         Console.WriteLine("║  7. Звіт           — загальна статистика     ║");
         Console.WriteLine("║  8. Аналітика      — статистика, сортування  ║");
-        Console.WriteLine("║  9. Розклад        — прийоми на день         ║");
-        Console.WriteLine("║  10. Тест масиву   — GrowablePatientManager  ║");
+        Console.WriteLine("║  9. Плани лікування — рефлексія, атрибути    ║");
+        Console.WriteLine("║  10. Розклад       — прийоми на день         ║");
+        Console.WriteLine("║  11. Тест масиву   — GrowablePatientManager  ║");
         Console.WriteLine("║  0. Вийти                                    ║");
         Console.WriteLine("╚══════════════════════════════════════════════╝");
         Console.Write("Оберіть розділ: ");
@@ -221,6 +222,9 @@ static void RunMainMenu(Clinic clinic)
                 AnalyticsMenu(clinic);
                 break;
             case "9":
+                TreatmentPlanMenu(clinic);
+                break;
+            case "10":
                 Console.Write("Введіть дату (рррр-мм-дд): ");
                 if (DateTime.TryParse(Console.ReadLine(), out DateTime selectedDate))
                 {
@@ -231,7 +235,7 @@ static void RunMainMenu(Clinic clinic)
                     Console.WriteLine("Некоректний формат дати.");
                 }
                 break;
-            case "10":
+            case "11":
                 TestGrowablePatientManager();
                 break;
             case "0":
@@ -415,6 +419,88 @@ static void PrintStats<T>(List<T> items)
     for (int i = 0; i < items.Count; i++)
     {
         Console.WriteLine($"{i + 1}. {items[i]}");
+    }
+}
+
+static void TreatmentPlanMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- Меню «Плани лікування» ---");
+        Console.WriteLine("1. Показати всі плани");
+        Console.WriteLine("2. Додати план");
+        Console.WriteLine("3. Плани пацієнта");
+        Console.WriteLine("4. Активувати план");
+        Console.WriteLine("5. Завершити план");
+        Console.WriteLine("6. Скасувати план");
+        Console.WriteLine("7. Інформація про тип");
+        Console.WriteLine("0. Назад до головного меню");
+        Console.Write("Оберіть дію: ");
+
+        string? choice = Console.ReadLine();
+        Console.WriteLine();
+
+        switch (choice)
+        {
+            case "1":
+                PrintPlans(clinic.TreatmentPlans.GetAll());
+                break;
+            case "2":
+            {
+                TreatmentPlan plan = FormBuilder.Build<TreatmentPlan>();
+                clinic.TreatmentPlans.Add(plan);
+                break;
+            }
+            case "3":
+            {
+                Console.Write("Введіть ID пацієнта: ");
+                int.TryParse(Console.ReadLine(), out int patientId);
+                PrintPlans(clinic.TreatmentPlans.GetByPatient(patientId));
+                break;
+            }
+            case "4":
+            case "5":
+            case "6":
+            {
+                Console.Write("Введіть ID плану: ");
+                int.TryParse(Console.ReadLine(), out int planId);
+                TreatmentPlan? plan = clinic.TreatmentPlans.GetById(planId);
+
+                if (plan == null)
+                {
+                    Console.WriteLine("План не знайдено.");
+                    break;
+                }
+
+                bool changed = choice == "4" ? plan.Activate() : choice == "5" ? plan.Complete() : plan.Cancel();
+                Console.WriteLine(changed
+                    ? $"Статус плану [{plan.Id}] змінено на {plan.Status}."
+                    : $"Перехід неможливий зі статусу {plan.Status}.");
+                break;
+            }
+            case "7":
+                ModelValidator.PrintInfo(typeof(TreatmentPlan));
+                break;
+            case "0":
+                return;
+            default:
+                Console.WriteLine("Невірний вибір. Спробуйте ще раз.");
+                break;
+        }
+    }
+}
+
+static void PrintPlans(TreatmentPlan[] plans)
+{
+    if (plans.Length == 0)
+    {
+        Console.WriteLine("Планів не знайдено.");
+        return;
+    }
+
+    for (int i = 0; i < plans.Length; i++)
+    {
+        Console.WriteLine(plans[i]);
     }
 }
 
