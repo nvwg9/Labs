@@ -167,6 +167,17 @@ Console.WriteLine($"Через Appointment:       {asBase.GetDescription()} | п
 Console.WriteLine($"Через UrgentAppointment: {urgentDemo.GetDescription()} | пріоритет {urgentDemo.GetPriority()}");
 Console.WriteLine();
 
+if (clinic.Session.Exists())
+{
+    Console.Write("Знайдено збережену сесію. Завантажити? (y/n): ");
+    if (Console.ReadLine()?.Trim().ToLower() == "y")
+    {
+        int loaded = clinic.Session.Load(clinic);
+        Console.WriteLine($"Завантажено {loaded} пацієнтів.");
+        clinic.Logger.LogInfo($"Завантажено сесію: {loaded} пацієнтів");
+    }
+}
+
 RunMainMenu(clinic);
 
 static void RunMainMenu(Clinic clinic)
@@ -243,6 +254,13 @@ static void RunMainMenu(Clinic clinic)
                 TestGrowablePatientManager();
                 break;
             case "0":
+                Console.Write("Зберегти сесію? (y/n): ");
+                if (Console.ReadLine()?.Trim().ToLower() == "y")
+                {
+                    clinic.Session.Save(clinic);
+                    Console.WriteLine("Сесію збережено.");
+                    clinic.Logger.LogInfo("Сесію збережено");
+                }
                 Console.WriteLine("Роботу програми завершено.");
                 return;
             default:
