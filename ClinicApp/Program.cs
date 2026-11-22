@@ -516,6 +516,7 @@ static void FilesMenu(Clinic clinic)
         Console.WriteLine("1. Останні рядки лога");
         Console.WriteLine("2. Очистити лог");
         Console.WriteLine("3. Експортувати всі звіти");
+        Console.WriteLine("4. Імпорт пацієнтів з CSV");
         Console.WriteLine("0. Назад до головного меню");
         Console.Write("Оберіть дію: ");
 
@@ -559,6 +560,15 @@ static void FilesMenu(Clinic clinic)
                     Console.WriteLine($"  {paths[i]}");
                 }
                 clinic.Logger.LogInfo($"Експортовано звітів: {paths.Length}");
+                break;
+            }
+            case "4":
+            {
+                Console.Write("Шлях до CSV-файлу: ");
+                string path = Console.ReadLine() ?? "";
+                ImportResult importResult = new CsvImporter().ImportPatients(clinic, path);
+                importResult.Print();
+                clinic.Logger.LogInfo($"Імпорт CSV: імпортовано {importResult.Imported}, пропущено {importResult.Skipped}");
                 break;
             }
             case "0":
