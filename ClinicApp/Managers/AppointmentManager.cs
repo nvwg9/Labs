@@ -1,3 +1,4 @@
+using ClinicApp.Events;
 using ClinicApp.Interfaces;
 using ClinicApp.Models;
 
@@ -11,6 +12,8 @@ public class AppointmentManager
     
     private readonly PatientManager _patients;
     private readonly DoctorManager _doctors;
+
+    public event EventHandler<AppointmentEventArgs>? AppointmentBooked;
 
     public int Count => _count;
     
@@ -102,6 +105,8 @@ public class AppointmentManager
         string patientName = _patients.FindById(appointment.PatientId)?.FullName ?? $"Пацієнт #{appointment.PatientId}";
         string doctorName = _doctors.FindById(appointment.DoctorId)?.FullName ?? $"Лікар #{appointment.DoctorId}";
         Console.WriteLine($"Запис [{appointment.Id}] {appointment.GetDescription()} створено: {patientName} -> {doctorName} о {appointment.ScheduledAt:dd.MM.yyyy HH:mm}");
+
+        AppointmentBooked?.Invoke(this, new AppointmentEventArgs(appointment.Id, appointment.PatientId, appointment.DoctorId, appointment.ScheduledAt));
     }
     
     public bool Cancel(int id, string reason = "")

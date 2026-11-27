@@ -3,6 +3,7 @@ using System.Text;
 using ClinicApp;
 using ClinicApp.Comparators;
 using ClinicApp.Enums;
+using ClinicApp.Events;
 using ClinicApp.Interfaces;
 using ClinicApp.Managers;
 using ClinicApp.Models;
@@ -14,6 +15,7 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 Console.OutputEncoding = Encoding.UTF8;
 
 Clinic clinic = new Clinic("Медична Клініка");
+clinic.Appointments.AppointmentBooked += OnAppointmentBookedConsole;
 
 clinic.Patients.Add(new Patient("Іван", "Петренко", new DateTime(1985, 5, 14), BloodType.APositive, "0501234567"));
 clinic.Patients.Add(new Patient("Олена", "Коваль", new DateTime(1993, 2, 20), BloodType.BNegative, "0672345678"));
@@ -179,6 +181,11 @@ if (clinic.Session.Exists())
 }
 
 RunMainMenu(clinic);
+
+static void OnAppointmentBookedConsole(object? sender, AppointmentEventArgs e)
+{
+    Console.WriteLine($"[EVENT] Запис #{e.AppointmentId} створено: пацієнт #{e.PatientId} → лікар #{e.DoctorId}, {e.ScheduledAt:dd.MM.yyyy HH:mm}");
+}
 
 static void RunMainMenu(Clinic clinic)
 {
