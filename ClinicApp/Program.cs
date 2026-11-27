@@ -501,7 +501,7 @@ static void TreatmentPlanMenu(Clinic clinic)
                     break;
                 }
 
-                bool changed = choice == "4" ? plan.Activate() : choice == "5" ? plan.Complete() : plan.Cancel();
+                bool changed = choice == "4" ? plan.Activate() : choice == "5" ? clinic.TreatmentPlans.Complete(planId) : plan.Cancel();
                 Console.WriteLine(changed
                     ? $"Статус плану [{plan.Id}] змінено на {plan.Status}."
                     : $"Перехід неможливий зі статусу {plan.Status}.");
@@ -650,9 +650,7 @@ static void RunPatientMenu(Clinic clinic)
                     Console.Write("Телефон (10 цифр): ");
                     string phone = Console.ReadLine() ?? "";
 
-                    Patient newPatient = new Patient(fn, ln, dob, (BloodType)btNum, phone);
-                    clinic.Patients.Add(newPatient);
-                    clinic.Logger.LogInfo($"Додано пацієнта #{newPatient.Id}: {newPatient.FullName}");
+                    clinic.Patients.Add(new Patient(fn, ln, dob, (BloodType)btNum, phone));
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
@@ -908,8 +906,7 @@ static void RunAppointmentMenu(Clinic clinic)
                     int dur = int.TryParse(durStr, out int parsedDur) ? parsedDur : 30;
                     try
                     {
-                        if (clinic.Appointments.Book(pId, dId, dt, dur))
-                            clinic.Logger.LogInfo($"Запис створено: пацієнт #{pId} → лікар #{dId} на {dt:dd.MM.yyyy HH:mm}");
+                        clinic.Appointments.Book(pId, dId, dt, dur);
                     }
                     catch (ArgumentOutOfRangeException e)
                     {
@@ -937,10 +934,7 @@ static void RunAppointmentMenu(Clinic clinic)
                     Console.Write("Причина скасування (необов'язково): ");
                     string reason = Console.ReadLine() ?? "";
                     if (clinic.Appointments.Cancel(cId, reason))
-                    {
                         Console.WriteLine($"Запис [{cId}] скасовано.");
-                        clinic.Logger.LogInfo($"Запис #{cId} скасовано");
-                    }
                     else
                         Console.WriteLine("Не вдалося скасувати запис.");
                 }
@@ -950,10 +944,7 @@ static void RunAppointmentMenu(Clinic clinic)
                 if (int.TryParse(Console.ReadLine(), out int cmpId))
                 {
                     if (clinic.Appointments.Complete(cmpId))
-                    {
                         Console.WriteLine($"Запис [{cmpId}] завершено.");
-                        clinic.Logger.LogInfo($"Запис #{cmpId} завершено");
-                    }
                     else
                         Console.WriteLine("Не вдалося завершити запис.");
                 }
@@ -976,7 +967,7 @@ static void RunAppointmentMenu(Clinic clinic)
                 Console.Write("Причина (Enter — без причини): ");
                 string cancelReason = Console.ReadLine() ?? "";
 
-                int cancelled = AppointmentManager.CancelAll(clinic.Appointments.GetByPatient(cancelPatientId), cancelReason);
+                int cancelled = clinic.Appointments.CancelAll(clinic.Appointments.GetByPatient(cancelPatientId), cancelReason);
                 Console.WriteLine($"Скасовано записів: {cancelled}");
                 break;
             }
@@ -1257,10 +1248,7 @@ static void RunBillingMenu(Clinic clinic)
                     break;
                 }
                 if (clinic.Billing.PayAppointment(appointmentId))
-                {
                     Console.WriteLine($"Запис [{appointmentId}] оплачено.");
-                    clinic.Logger.LogInfo($"Запис #{appointmentId} оплачено");
-                }
                 else
                     Console.WriteLine("Не вдалося оплатити: запис не знайдено, вже оплачено або скасовано.");
                 break;

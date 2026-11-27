@@ -49,7 +49,6 @@ public class CsvImporter
 
                 Patient patient = new Patient(parts[0].Trim(), parts[1].Trim(), dateOfBirth, bloodType, parts[4].Trim());
                 clinic.Patients.Add(patient);
-                clinic.Logger.LogInfo($"Імпортовано пацієнта #{patient.Id}: {patient.FullName}");
                 result.AddSuccess();
             }
             catch (FormatException e)
